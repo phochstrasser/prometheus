@@ -12,7 +12,7 @@ endif()
 # strongly encouraged to enable this globally to avoid conflicts between
 # -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
 # when compiling with PCH enabled
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 # Set the project name and language
 project(
@@ -54,9 +54,6 @@ add_library(prometheus::prometheus_warnings ALIAS prometheus_warnings)
 #add_library(prometheus::prometheus_options INTERFACE IMPORTED)
 #add_library(prometheus::prometheus_warnings INTERFACE IMPORTED)
 
-# configure files based on CMake configuration options
-add_subdirectory(configured_files)
-
 # Adding the src:
 add_subdirectory(src)
 
@@ -69,18 +66,8 @@ endif()
 include(CTest)
 
 if(BUILD_TESTING)
-  message(AUTHOR_WARNING "Building Tests. Be sure to check out test/constexpr_tests.cpp for constexpr testing")
+#  message(AUTHOR_WARNING "Building Tests. Be sure to check out test/constexpr_tests.cpp for constexpr testing")
   add_subdirectory(test)
-endif()
-
-
-if(prometheus_BUILD_FUZZ_TESTS)
-  message(AUTHOR_WARNING "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html")
-  if (NOT prometheus_ENABLE_ADDRESS_SANITIZER AND NOT prometheus_ENABLE_THREAD_SANITIZER)
-    message(WARNING "You need asan or tsan enabled for meaningful fuzz testing")
-  endif()
-  add_subdirectory(fuzz_test)
-
 endif()
 
 # If MSVC is being used, and ASAN is enabled, we need to set the debugger environment
@@ -92,7 +79,7 @@ if(MSVC)
 endif()
 
 # set the startup project for the "play" button in MSVC
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT intro)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT sandbox)
 
 if(CMAKE_SKIP_INSTALL_RULES)
   return()
@@ -104,7 +91,7 @@ include(cmake/PackageProject.cmake)
 # we know we want to ship
 prometheus_package_project(
   TARGETS
-  intro
+  sandbox
   prometheus_options
   prometheus_warnings
   # FIXME: this does not work! CK
