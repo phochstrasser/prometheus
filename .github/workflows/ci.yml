@@ -7,10 +7,10 @@ on:
     tags:
     branches:
       - main
-      - develop
+      - development
 
 env:
-  CLANG_TIDY_VERSION: "15.0.2"
+  CLANG_TIDY_VERSION: "16.0.6"
   VERBOSE: 1
 
 
@@ -29,13 +29,14 @@ jobs:
       # and your own projects needs
       matrix:
         os:
-          - ubuntu-20.04
-          - macos-10.15
+          - ubuntu-22.04
+          #- macos-13
           - windows-2019
+          - windows-2022
         compiler:
-          # you can specify the version after `-` like "llvm-15.0.2".
-          - llvm-15.0.2
-          - gcc-11
+          # you can specify the version after `-` like "llvm-16.0.6".
+          - llvm-16.0.6
+          - gcc-13
         generator:
           - "Ninja Multi-Config"
         build_type:
@@ -50,21 +51,23 @@ jobs:
         exclude:
           # mingw is determined by this author to be too buggy to support
           - os: windows-2019
-            compiler: gcc-11
+            compiler: gcc-13
+          - os: windows-2022
+            compiler: gcc-13
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
-          - compiler: gcc-11
-            gcov_executable: gcov
+          - compiler: gcc-13
+            gcov_executable: gcov-13
             enable_ipo: On
 
-          - compiler: llvm-15.0.2
+          - compiler: llvm-16.0.6
             enable_ipo: Off
             gcov_executable: "llvm-cov gcov"
 
-          - os: macos-10.15
-            enable_ipo: Off
+          #- os: macos-13
+          #  enable_ipo: Off
 
           # Set up preferred package generators, for given build configurations
           - build_type: Release
@@ -72,11 +75,11 @@ jobs:
             package_generator: TBZ2
 
           # This exists solely to make sure a non-multiconfig build works
-          - os: ubuntu-20.04
-            compiler: gcc-11
+          - os: ubuntu-22.04
+            compiler: gcc-13
             generator: "Unix Makefiles"
             build_type: Debug
-            gcov_executable: gcov
+            gcov_executable: gcov-13
             packaging_maintainer_mode: On
             enable_ipo: Off
 
